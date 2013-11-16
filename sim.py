@@ -14,6 +14,7 @@ class Protein(object):
 class Cell(object):
 	def __init__(self, chromosomes):
 		self.chromosomes = chromosomes
+		self.delimeter = "|"	# Chromosome split delimeter
 	def __str__(self):
 		val = ""
 		counter = 1
@@ -31,18 +32,15 @@ class Chromosome(object):
 
 class Gamete(Cell): 
 	def meiosis(self):
-		i = 0
 		for cGroup in self.chromosomes:
 			cGroup.insert(1, copy.deepcopy(cGroup[0]))			# replication: duplicate each chromosome pair
 			cGroup.insert(3, copy.deepcopy(cGroup[2]))
-			print "cGroup: ", i
-			i += 1
 			self.__prophase(cGroup)	# crossing over at chiasmatas 
 	def __prophase(self, chromosomes):
 		halfLength = len(chromosomes)/2
 		for i in xrange(halfLength):			# cross over pairs are (i) and (i + halfLength)
-			chromatid1 = chromosomes[i].sequence.split("|")
-			chromatid2 = chromosomes[i+halfLength].sequence.split("|")
+			chromatid1 = chromosomes[i].sequence.split(self.delimeter)
+			chromatid2 = chromosomes[i+halfLength].sequence.split(self.delimeter)
 			chiasmatas = []
 			minChromatidLength = min(len(chromatid1), len(chromatid2))
 			chiasmata = random.randint(0, minChromatidLength - 1)
@@ -53,14 +51,14 @@ class Gamete(Cell):
 				if chiasmata in chiasmatas:
 					continue
 				x = min(map(lambda x: abs(x-chiasmata), chiasmatas))
-				probOfCrossover = 1/(1+math.exp(-(-5+x)))
+				probOfCrossover = 1/(1+math.exp(-(-5+x)))	# modified logorithmic growth (S) curve - asymptotic at f(x)=1
 				success = probOfCrossover*100 >= random.randint(1,100)
 				if success:
 					chromatid1[chiasmata], chromatid2[chiasmata] = chromatid2[chiasmata], chromatid1[chiasmata]
 					chiasmatas.append(chiasmata)
 
-			chromosomes[i].sequence = "|".join(chromatid1)
-			chromosomes[i+halfLength].sequence = "|".join(chromatid2)
+			chromosomes[i].sequence = self.delimeter.join(chromatid1)
+			chromosomes[i+halfLength].sequence = self.delimeter.join(chromatid2)
 
 c1m = Chromosome("00|00|00|00|00|00|00|00")
 c1d = Chromosome("11|11|11|11|11|11|11|11")
