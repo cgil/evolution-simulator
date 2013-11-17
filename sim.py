@@ -3,6 +3,21 @@ import random
 import math
 import copy
 
+# A cell house and factory
+class Body(object):
+	def __init__(self, zygote):
+		self.chromosomes = zygote.chromosomes
+	def __str__(self):
+		val = ""
+		counter = 1
+		for cGroup in self.chromosomes.values():
+			val += "Chromosome group #" + str(counter) + ":\n"
+			for c in cGroup:
+				val += c.sequence + " "
+			val += "\n"
+			counter += 1
+		return val
+
 class AminoAcid(object):
 	def __init__(self, type):
 		self.type = type
@@ -89,19 +104,52 @@ class Germ(Cell):
 				gametes[i].add(chromatid)
 		return gametes
 
+# Combination of two Gamete cells, forms the basis of a new generation for the Cell
+class Zygote(Cell):
+	def __init__(self, gamete1, gamete2):
+		super(Zygote,self).__init__()
+		for k,v in gamete1.chromosomes.iteritems():
+			if self.chromosomes.get(k):
+				self.chromosomes[k].append(v[0])
+			else:
+				self.chromosomes[k] = v
+		for k,v in gamete2.chromosomes.iteritems():
+			if self.chromosomes.get(k):
+				self.chromosomes[k].append(v[0])
+			else:
+				self.chromosomes[k] = v
 
 c1m = Chromosome("00|00|00|00|00|00|00|00")
 c1d = Chromosome("11|11|11|11|11|11|11|11")
 c2m = Chromosome("22|22|22|22|22|22|22|22")
 c2d = Chromosome("33|33|33|33|33|33|33|33")
+
+c3m = Chromosome("44|44|44|44|44|44|44|44")
+c3d = Chromosome("55|55|55|55|55|55|55|55")
+c4m = Chromosome("66|66|66|66|66|66|66|66")
+c4d = Chromosome("77|77|77|77|77|77|77|77")
+
 cPair1 = [c1m, c1d]
 cPair2 = [c2m, c2d]
 chromes = {}
 chromes[0] = cPair1
 chromes[1] = cPair2
+cell1 = Germ(chromes)
 
-cell = Germ(chromes)
-gametes = cell.meiosis()
+cPair1 = [c3m, c3d]
+cPair2 = [c4m, c4d]
+chromes = {}
+chromes[0] = cPair1
+chromes[1] = cPair2
+cell2 = Germ(chromes)
+
+gametes1 = cell1.meiosis()
+gametes2 = cell2.meiosis()
+
+body = Body(Zygote(gametes1[0], gametes2[0]))
+print body
+
+
 
 
 
