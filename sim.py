@@ -6,7 +6,7 @@ import copy
 # A cell house and factory
 class Body(object):
 	def __init__(self, zygote):
-		self.chromosomes = zygote.chromosomes
+		self.zygote = zygote
 	def __str__(self):
 		val = ""
 		counter = 1
